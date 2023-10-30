@@ -1,0 +1,143 @@
+---
+title: "gurobi-python-egitimi"
+author: "erdi dasdemir"
+format: pptx
+editor: visual
+execute:
+  echo: true
+---
+
+```{python}
+#| echo: false
+
+import gurobipy as gp
+from gurobipy import GRB
+```
+
+## Lists and Tuples
+
+```{python}
+#| echo: true
+
+# list oluşturma örneği
+l = [1, 2.0, "abc"] 
+     
+# tuple oluşturma örneği
+t = (1, 2.0, "abc")
+
+# l listesinin ilk ve üçüncü elemanlarını ekrana yazdırma
+print(l[0]) 
+print(l[2])
+
+# t tuple'ının ilk elemanını ekrana yazdırma
+print(t[1]) 
+```
+
+## Tuple - Liste Karşılaştırması
+
+-   Bir tuple değişmezdir, yani oluşturulduktan sonra değiştirilemez.
+
+-   Buna karşılık, bir listeye eklemeler, değişiklikler ve çıkarmalar yapabilirsiniz.
+
+-   Tuple'ların değişmeme özelliği onları dictionary'lerde dizin/endeks olarak kullanmanıza olanak tanır.
+
+## Dictionaries
+
+Dictionary (Sözlük) veri yapısı, anahtar değerleri veri parçalarıyla eşleştirmenize olanak tanır.
+
+Herhangi bir değişmez Python nesnesi anahtar olarak kullanılabilir:
+
+Örnek: EMU679: 11, EMU430:73 yapısında EMU679 ve EMU430 anahtar, 11 ve 73 ise sınıf mevcutlarını gösteren değelerdir.
+
+Bunu bir Python dictionary olarak şöyle tanımlarız:
+
+```{python}
+ders_kapasite = {}  # boş bir dictionary tanımlar
+ders_kapasite['EMU679'] = 11 #EMU679 anahtarına 11 atar.
+ders_kapasite['EMU430'] = 73 #EMU430 anahtarına 11 atar.
+
+# Bu dictionary'i tek satırda da tanımlayabilirdik:
+ders_kapasite = {'EMU679':11, 'EMU430':73}
+
+#Dictonary elemanlarını ekrana şu şekilde yazdırabiliriz:
+print(ders_kapasite)
+print(ders_kapasite['EMU430'])
+print(ders_kapasite['EMU679'])
+
+```
+
+## Multidict
+
+-   Gurobi Python ara yüzü, matematiksel optimizasyon modellerinde sıklıkla ortaya çıkan bir durum için sözlük başlatmayı basitleştiren bir veri yapısı olan Multidict'e sahiptir.
+
+-   Multidict işlevi, bir veya daha fazla sözlüğü tek seferde tanımlamaya olanak tanır.
+
+-   Her anahtarla ilişkili değer, 𝑛 uzunluğundaki bir listedir. Bu listeleri ayrı objelere bölünere 𝑛 ayrı sözlük oluşturulur. Fonksiyon bir liste döndürür. Bu listedeki ilk öğe, paylaşılan anahtar değerlerin listesi ve onu takip eden n ayrı sözlüktür.
+
+```{python}
+
+
+names, lower, upper = gp.multidict({ 'x': [0, 1], 'y': [1, 2], 'z': [0, 3]}) 
+
+print(names) # ['x', 'y', 'z’] 
+print(lower) # {'x': 0, 'y': 1, 'z': 0} 
+print(upper) # {'x': 1, 'y': 2, 'z': 3} 
+```
+
+## List Comprehension ve Generator
+
+List Comphrension ve Generator ifadaeleri, kısa ve öz bir şekilde örtülü numaralandırma yapmaya olanak tanıyan önemli Python özellikleridir.
+
+Basit bir örnek vermek gerekirse aşağıdaki liste anlayışı 1'den 5'e kadar olan sayıların karelerini içeren bir liste oluşturur:
+
+```{python}
+[x*x for x in [1, 2, 3, 4, 5]]
+
+sum(x*x for x in [1, 2, 3, 4, 5]) 
+```
+
+## Daha fazla örnek
+
+```{python}
+sum(x*x for x in range(1,6))
+[(x,y) for x in range(4) for y in range(4) if x < y]
+[(x,y) for x in range(4) for y in range(x+1, 4)]
+```
+
+## Tuplelist
+
+Python liste sınıfının özel bir alt sınıfıdır. Bir tuple listesinden alt listeler oluşturmanıza olanak sağlar. Select yöntemiyle ilgili elemanları eşleşen tüm tuple'ları çağırmaya yarar.
+
+```{python}
+l = gp.tuplelist([(1, 2), (1, 3), (2, 3), (2, 4)])
+print(l.select(1, '*'))
+print(l.select('*', 3))
+print(l.select('*', [2, 4]))
+print(l.select(1, 3))
+print(l.select('*', '*'))
+```
+
+## Tupledict
+
+-   Gurobi değişkenlerini içeren objelerin alt kümeleriyle verimli bir şekilde çalışmanıza olanak tanır.
+
+-   Doğrusal ifadeleri kolayca ve kısa bir şekilde oluşturmak için `sum` ve `prod` yöntemlerini sunar.
+
+-   Bir `tupledict`'in anahtarları bir `tuplelist` olarak saklanır, böylece alt kümeleri seçmek için `select` yöntemi kullanılabilir.
+
+-   Her bir Gurobi değişkenini bir `tuple` ile ilişkilendirerek, eşleşen değişkenlerin çağıracak ifadeleri kolayca yazabilirsiniz.
+
+-   Örneğin, (x.sum(3, '\*')) dediğimizde `x` `tupledict` nesnesinde `sum` yöntemini kullanarak, ilk alanının 3'e eşit olduğu tüm Gurobi değişkenlerinin toplamını yakalayan bir ifadeyi kolayca oluşturabilirsiniz .
+
+```{python}
+model = gp.Model("ornek") # creates gurobi model
+l = list([(1, 2), (1, 3), (2, 3), (2, 4)]) # creates list l, each element is a tuple
+d = model.addVars(l, name="d")  # add list elements as variables
+# this will create variables d(1,2), d(1,3), d(2,3), and d(2,4)
+model.update() # we need to update model before calling its elements
+
+
+d.select(1, '*') # d(1,2),d(1,3)
+d.sum(1, '*') # d(1,2) + d(1,3)
+d.sum('*', 3) # d(1,3) + d(2,3)
+```
