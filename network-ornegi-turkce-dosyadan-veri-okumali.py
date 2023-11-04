@@ -21,12 +21,12 @@ import os
 
 # dosya isimlerini tanimlayalim
 # girdi dosyalari model_inputs--> network klasoru icerisinde oldugu icin os.path.join fonksiyonuyla dosyalarin konumunu da ekliyorum.
-commodities_file = os.path.join('model-inputs','network', 'commodities.csv')
-nodes_file = os.path.join('model-inputs','network', 'nodes.csv')
-cost_file = os.path.join('model-inputs','network', 'arc_cost.csv')
-capacity_file = os.path.join('model-inputs', 'network','arc_capacity.csv')
-demand_file = os.path.join('model-inputs', 'network','node_demand.csv')
-supply_file = os.path.join('model-inputs', 'network','node_supply.csv')
+commodities_file = os.path.join('model_inputs','network', 'commodities.csv')
+nodes_file = os.path.join('model_inputs','network', 'nodes.csv')
+cost_file = os.path.join('model_inputs','network', 'arc_cost.csv')
+capacity_file = os.path.join('model_inputs', 'network','arc_capacity.csv')
+demand_file = os.path.join('model_inputs', 'network','node_demand.csv')
+supply_file = os.path.join('model_inputs', 'network','node_supply.csv')
 
 # dosyalari okuyalim
 commodities_df = pd.read_csv(commodities_file)

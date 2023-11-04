@@ -14,7 +14,7 @@ import re
 
 # dosya isimlerini tanimlayalim
 # girdi dosyalari model_inputs--> network klasoru icerisinde oldugu icin os.path.join fonksiyonuyla dosyalarin konumunu da ekliyorum.
-inputs_file = os.path.join('model-inputs','orman_tahsis', 'orman_veri.csv')
+inputs_file = os.path.join('model_inputs','orman_tahsis', 'orman_veri.csv')
 
 # dosyalari okuyalim
 orman_df = pd.read_csv(inputs_file)
@@ -82,7 +82,6 @@ model.optimize()
 x_ij_results_df = pd.DataFrame(columns=['var_name', 'analiz_alani_id', 'recete_id', 'value'])
 counter = 0
 for v in x_ijk.values():
-    # if(v.X>0):
     current_var = re.split("\[|,|]", v.varName)[:-1]
     current_var.append(round(v.X, 4))
     x_ij_results_df.loc[counter] = current_var
