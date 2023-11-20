@@ -149,6 +149,8 @@ m.addConstrs((flow.sum('*', i, j) <= capacity[i, j] for i, j in arcs), "cap")
 
 # Compute optimal solution
 m.optimize()
+m.write("model_network_prmial_hand.lp")
+m.write("model_network_dual_hand.dlp")
 
 # Print solution
 if m.Status == GRB.OPTIMAL:
