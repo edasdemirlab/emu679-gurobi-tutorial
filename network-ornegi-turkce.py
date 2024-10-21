@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct 30 21:27:17 2023
+Updated on Mon Oct 21 09:00:00 2024
 
 @author: erdidasdemir
 """
@@ -12,8 +13,8 @@ from gurobipy import GRB
 
 # Sabit verilerin tanımlanması
 commodities = ['Pencils', 'Pens'] # ürün seti listesi
-supply_nodes = nodes = ['Detroit', 'Denver'] # şehir listesi
-demand_nodes = nodes = ['Boston', 'New York', 'Seattle'] # şehir listesi
+supply_nodes =  ['Detroit', 'Denver'] # şehir listesi
+demand_nodes =  ['Boston', 'New York', 'Seattle'] # şehir listesi
 
 # bağlantı ürün başına gönderim maliyeti -->  dict olarak tanimliyoruz, key'ler tuple
 cost = {
@@ -35,13 +36,15 @@ cost = {
 # bağlantı kapasiteleri --> multi dict olarak tanimlayalim
 # arcs-- key'leri tutan bir tuple list, capacity-- degeleri tutan bir tupledict olacak
 
-arcs, capacity = gp.multidict({ 
+capacity_tuple_dict = { 
     ('Detroit', 'Boston'):   100,
     ('Detroit', 'New York'):  80,
     ('Detroit', 'Seattle'):  120,
     ('Denver',  'Boston'):   120,
     ('Denver',  'New York'): 120,
-    ('Denver',  'Seattle'):  120})
+    ('Denver',  'Seattle'):  120}
+
+arcs, capacity = gp.multidict(capacity_tuple_dict)
 
 
 # Şehirlerin talep ve arzları. Negatif değerler talebe, pozitif değerler arza sahip olduklarını gösterir.
@@ -64,11 +67,27 @@ supply = {
 
 
 
-# Modeli yaratalım
+# Modeli yaratalım 
+# ornek amacli sadece arcs ile degiskenleri yaratacagiz
 m = gp.Model('netflow')
 
-# Değişkenleri modele ekleyelim
-flow = m.addVars(commodities, arcs, obj=cost, name="flow")
+# =============================================================================
+# # Değişkenleri modele ekleyelim
+# flow = m.addVars(arcs, name="arcs_var")
+# m.update()
+# 
+# # check model variables
+# m.getVars()
+# =============================================================================
+
+
+# Dogru Modeli yaratalım
+m = gp.Model('netflow')
+x_hij = m.addVars(commodities, arcs, obj=cost, name="x_hij")
+m.update()
+# check model variables
+m.getVars()
+
 
 
 # kisitlari ekleyelim
@@ -78,22 +97,36 @@ flow = m.addVars(commodities, arcs, obj=cost, name="flow")
 
 # demand esitligi
 m.addConstrs(
-    (flow.sum(h, '*', j) == demand[h, j] for h in commodities for j in demand_nodes), "node_demand")
+    (x_hij.sum(h, '*', j) == demand[h, j] for h in commodities for j in demand_nodes), "node_demand")
+
+# alternatif
+# =============================================================================
+# for j in demand_nodes:
+#     for h in commodities:
+#         m.addConstr(flow.sum(h, '*', j) == demand[h, j], "node_demand")
+# 
+# =============================================================================
+        
 
 # arz esitlikleri
-m.addConstrs((flow.sum(h, i, '*') == supply[h, i] for h in commodities for i in supply_nodes), "node_supply")
+m.addConstrs((x_hij.sum(h, i, '*') == supply[h, i] for h in commodities for i in supply_nodes), "node_supply")
  
 
 # Arc-capacity constraints
-m.addConstrs((flow.sum('*', i, j) <= capacity[i, j] for i, j in arcs), "cap")
+m.addConstrs((x_hij.sum('*', i, j) <= capacity[i, j] for i, j in arcs), "cap")
 
+
+# print model to a file
+m.update()
+m.write("model_network_prmial_hand.lp")
+m.write("model_network_dual_hand.dlp")
 
 # Compute optimal solution
 m.optimize()
 
 # Print solution
 if m.Status == GRB.OPTIMAL:
-    solution = m.getAttr('X', flow)
+    solution = m.getAttr('X', x_hij)
     for h in commodities:
         print('\nOptimal flows for %s:' % h)
         for i, j in arcs:

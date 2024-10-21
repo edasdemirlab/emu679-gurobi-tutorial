@@ -45,6 +45,14 @@ print(ders_kapasite['EMU430'])
 print(ders_kapasite['EMU679'])
 
 
+#tupledict
+ders_kapasite_toplamlari = { ('emu679', 'emu430', '23'):   84,
+                 ('emu679', 'emu430', '24'):   90,
+                 ('muy659', 'emu415', '24'):   80 }
+
+print(ders_kapasite_toplamlari)
+print(ders_kapasite_toplamlari[('emu679', 'emu430', '24')])
+
 
 # 3 Multidict
 #Gurobi Python ara yüzü, matematiksel optimizasyon modellerinde sıklıkla ortaya çıkan bir durum için sözlük başlatmayı basitleştiren bir yardımcı veri yapısı olan Multidict’e sahiptir (gurobipy paketi ile gelir, düz Python’da yoktur).
@@ -76,7 +84,9 @@ sum(x*x for x in range(1,6))
 # Select yöntemiyle ilgili elemanları eşleşen tüm tuple'ları çağırmaya yarar.
 
 l = gp.tuplelist([(1, 2), (1, 3), (2, 3), (2, 4)])
+
 print(l.select(1, '*'))
+
 print(l.select('*', 3))
 print(l.select('*', [2, 4]))
 print(l.select(1, 3))
@@ -84,12 +94,16 @@ print(l.select('*', '*'))
 
 
 
-# 6 Tupledict
-model = gp.Model('tupledict_ornek')
-l = list([(1, 2), (1, 3), (2, 3), (2, 4)])
-d = model.addVars(l, name="d")
-model.update()
+model = gp.Model("ornek") # creates gurobi model
+ij_pairs_list = gp.tuplelist([(1, 2), (1, 3), (2, 3), (2, 4)]) # creates list, each element is a tüple
 
+x_ij = model.addVars(ij_pairs_list , name="x_ij")  # add list elements as variables
 
+# this will create variables x_ij(1,2), x_ij(1,3), x_ij(2,3), and x_ij(2,4)
 
+model.update() # we need to update model before calling its elements
+
+x_ij.select(1, '*') # x_ij(1,2), x_ij(1,3)
+x_ij.sum(1, '*') # x_ij(1,2) + x_ij(1,3)
+x_ij.sum('*', 3) # x_ij(1,3) + x_ij(2,3)
 
