@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['network-ornegi-turkce-dosyadan-veri-okumali.py', 'veri-yapilari.py', 'network-ornegi-turkce.py', '..\\..\\..\\anaconda3\\Lib\\site-packages\\jedi\\third_party\\typeshed\\stdlib\\3\\builtins.pyi', 'diet.py', 'iismodel.ilp']
+recent_files = []
 
 [main]
 version = 0.2.0

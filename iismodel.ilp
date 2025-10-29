@@ -1,0 +1,18 @@
+\ Model HighSchoolMeal_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+ 
+Subject To
+ VitaminAMin: 4 x[0] + 10 x[1] + 6 x[2] + 100 x[5] + 90 x[6] + 10 x[7]
+   + 20 x[8] + 2 x[9] + 10 x[10] >= 2500
+Bounds
+ -infinity <= x[0] <= 3
+ -infinity <= x[1] <= 3
+ -infinity <= x[2] <= 3
+ -infinity <= x[5] <= 3
+ -infinity <= x[6] <= 3
+ -infinity <= x[7] <= 3
+ -infinity <= x[8] <= 3
+ -infinity <= x[9] <= 3
+ -infinity <= x[10] <= 3
+End

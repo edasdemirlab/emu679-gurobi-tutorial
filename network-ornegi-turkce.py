@@ -32,7 +32,6 @@ cost = {
     ('Pens',    'Denver',  'Seattle'):  30}
 
 
-
 # bağlantı kapasiteleri --> multi dict olarak tanimlayalim
 # arcs-- key'leri tutan bir tuple list, capacity-- degeleri tutan bir tupledict olacak
 
@@ -69,7 +68,7 @@ supply = {
 
 # Modeli yaratalım 
 # ornek amacli sadece arcs ile degiskenleri yaratacagiz
-m = gp.Model('netflow')
+# m = gp.Model('netflow')
 
 # =============================================================================
 # # Değişkenleri modele ekleyelim
@@ -84,6 +83,7 @@ m = gp.Model('netflow')
 # Dogru Modeli yaratalım
 m = gp.Model('netflow')
 x_hij = m.addVars(commodities, arcs, obj=cost, name="x_hij")
+
 m.update()
 # check model variables
 m.getVars()
@@ -108,6 +108,8 @@ m.addConstrs(
 # =============================================================================
         
 
+
+
 # arz esitlikleri
 m.addConstrs((x_hij.sum(h, i, '*') == supply[h, i] for h in commodities for i in supply_nodes), "node_supply")
  
@@ -118,7 +120,7 @@ m.addConstrs((x_hij.sum('*', i, j) <= capacity[i, j] for i, j in arcs), "cap")
 
 # print model to a file
 m.update()
-m.write("model_network_prmial_hand.lp")
+m.write("kontrol_model.lp")
 m.write("model_network_dual_hand.dlp")
 
 # Compute optimal solution
